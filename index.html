@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+
+<head>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <meta charset="UTF-8">
+    <title>BFC Calais - Séance d'essai</title>
+</head>
+
+<body>
+    <h1>BFC CALAIS - Club de Savate Boxe Française & Disciplines Associées</h1>
+    <p>Avant de prendre votre licence, vous bénéficiez de deux séances d'essai gratuites !</p>
+    <p>Disciplines proposées :</p>
+
+    <article class="bloc-discipline">
+        <h3>Savate Boxe Française</h3>
+        <p>Sport de percussion pieds-poings, technique et précision, pratiqué avec des chaussures de boxe.</p>
+        <p>A partir de 7 ans (ou année des 7 ans)</p>
+
+        <h4>Horaires :
+            ADOS : Lundi/Jeudi 18h-19h
+            ADULTES : Lundi/Jeudi 19h-20h30
+            ENFANTS : Mardi/Vendredi 18h-19h
+        </h4>
+    </article>
+
+    <article class="bloc-discipline">
+        <h3>Savate Forme</h3>
+        <p>Version cardio et fitness de la Savate, sans combat, pour se dépenser sur des enchaînements rythmés et en
+            musique !</p>
+        <p>A partir de 16 ans</p>
+
+        <h4>Horaires :
+            Mercredi/Vendredi 19H15-20H15
+        </h4>
+    </article>
+
+    <article class="bloc-discipline">
+        <h3>Savate Défense</h3>
+        <p>Techniques issues de la Savate adaptées à la self-défense et aux situations concrètes.</p>
+        <p>A partir de 12 ans</p>
+
+        <h4>Horaires :
+            Mercredi 19H15-20H15
+        </h4>
+    </article>
+
+    <article class="bloc-discipline">
+        <h3>Savate Training</h3>
+        <p>Entraînement physique inspiré de la Savate, orienté renforcement et préparation athlétique.</p>
+        <p>A partir de 14 ans</p>
+
+        <h4>Horaires :
+            Mercredi 18h-19h
+            Samedi 10h30-11h30
+        </h4>
+    </article>
+
+    <h2>Veuillez remplir le formulaire ci-dessous :</h2>
+
+    <p id="carte-nom">Nom </p>
+    <p id="carte-prenom">Prénom </p>
+    <p id="carte-age">Âge </p>
+    <p id="carte-discipline">Discipline souhaitée </p>
+
+    <form onsubmit="EnregistrerDemande(event)">
+        <label for="nom">Nom</label>
+        <input type="text" id="nom" placeholder="Nom">
+
+        <label for="prenom">Prénom</label>
+        <input type="text" id="prenom" placeholder="Prénom">
+
+        <label for="dateNaissance">Date de naissance</label>
+        <input type="date" id="dateNaissance" oninput="filtrerDisciplines()">
+
+        <label for="discipline">Discipline</label>
+        <select id="discipline">
+            <option value="">-- Sélectionner une discipline --</option>
+        </select>
+
+        <button type="submit">Enregistrer</button>
+    </form>
+
+</body>
+
+</html>
