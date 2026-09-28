@@ -1,79 +1,223 @@
-// Calcule un âge (en années) à partir d'une date de naissance
-function calculerAge(dateNaissance) {
-    const naissance = new Date(dateNaissance);
-    const aujourdHui = new Date();
+// Disciplines du club : tableaux parallèles (même position = même discipline)
+const nomsDisciplines = ["Savate Boxe Française", "Savate Défense", "Savate Training", "Savate Forme"];
+const agesMinimum = [7, 12, 14, 16];
 
-    let age = aujourdHui.getFullYear() - naissance.getFullYear();
+// Équipe du club : tableaux parallèles (même position = même moniteur)
+const nomsCoachs = ["Philippe SUISSE", "Anne-Laure SUISSE", "Maëva CARON", "Damien DIEFFENBACH", "Julien WILLO", "Nicolas CHIUMMIENTO"];
+const fonctionsCoachs = ["Président du club", "Monitrice", "Monitrice", "Moniteur", "Moniteur", "Moniteur"];
+// Chaque case contient elle-même un tableau : les disciplines enseignées par le moniteur
+const coursCoachs = [
+    ["Savate Boxe Française", "Savate Forme", "Savate Défense", "Savate Training"],
+    ["Savate Boxe Française", "Savate Forme"],
+    ["Savate Boxe Française"],
+    ["Savate Boxe Française", "Savate Training"],
+    ["Savate Boxe Française"],
+    ["Savate Boxe Française"]
+];
+// Catégorie d'âge des cours de Boxe Française du moniteur ("" = non précisée)
+const categoriesBoxe = ["Cours enfants / ados / adultes", "Cours enfants", "Cours enfants", "Cours ados / adultes", "Cours ados / adultes", "Cours ados / adultes"];
+// true = le moniteur n'intervient que de temps en temps
+const occasionnels = [false, false, false, false, false, true];
 
-    // On vérifie si l'anniversaire est déjà passé cette année
-    const moisEcart = aujourdHui.getMonth() - naissance.getMonth();
-    if (moisEcart < 0 || (moisEcart === 0 && aujourdHui.getDate() < naissance.getDate())) {
-        age = age - 1;
+// Affichage de l'équipe : une carte par moniteur
+function afficherEquipe() {
+    const grille = document.querySelector("#liste-equipe");
+    let htmlCartes = "";
+
+    for (let i = 0; i < nomsCoachs.length; i++) {
+        // Initiales pour le badge : première lettre du prénom + première lettre du nom
+        const morceaux = nomsCoachs[i].split(" ");
+        const initiales = morceaux[0][0] + morceaux[1][0];
+
+        // Boucle imbriquée : une "puce" par discipline
+        let puces = "";
+        for (let j = 0; j < coursCoachs[i].length; j++) {
+            puces += `<span class="puce">${coursCoachs[i][j]}</span>`;
+
+            // Truthy / falsy : si une catégorie d'âge est renseignée, on la place après la Boxe Française
+            if (coursCoachs[i][j] === "Savate Boxe Française" && categoriesBoxe[i]) {
+                puces += `<span class="puce puce-cours">${categoriesBoxe[i]}</span>`;
+            }
+        }
+
+        // Ternaire : la carte du président est mise en avant
+        const classeCarte = fonctionsCoachs[i] === "Président du club" ? "carte-coach carte-president" : "carte-coach";
+
+        // Ternaire : mention affichée uniquement pour les intervenants occasionnels
+        const mention = occasionnels[i]
+            ? '<p class="occasionnel">Intervient occasionnellement</p>'
+            : "";
+
+        htmlCartes += `
+            <article class="${classeCarte} ${occasionnels[i] ? "carte-occasionnelle" : ""}">
+                <div class="badge-coach couleur-${i % 4}">${initiales}</div>
+                <div class="infos-coach">
+                    <h3>${nomsCoachs[i]}</h3>
+                    <p class="fonction">${fonctionsCoachs[i]}</p>
+                    <div class="puces">${puces}</div>
+                    ${mention}
+                </div>
+            </article>
+        `;
     }
 
-    return age;
+    grille.innerHTML = htmlCartes;
 }
 
-// Reconstruit la liste des disciplines proposées en fonction de l'âge minimum requis pour chacune
-function filtrerDisciplines() {
-    const champDateNaissance = document.querySelector("#dateNaissance");
-    const selectDiscipline = document.querySelector("#discipline");
+// Demandes enregistrées : tableaux parallèles (même position = même demande)
+const noms = [];
+const prenoms = [];
+const ages = [];
+const disciplines = [];
 
-    // Si aucune date n'est encore saisie, on ne fait rien
-    if (champDateNaissance.value === "") {
+// Fonction d'affichage : génère une carte par demande et l'injecte dans la page
+function afficherDemandes() {
+    const liste = document.querySelector("#liste-demandes");
+    const compteur = document.querySelector("#compteur");
+
+    // Ternaire : accord du mot "demande" selon le nombre
+    compteur.textContent = noms.length + " demande" + (noms.length > 1 ? "s" : "");
+
+    if (noms.length === 0) {
+        liste.innerHTML = "<p class='vide'>Aucune demande enregistrée pour le moment.</p>";
         return;
     }
 
-    const age = calculerAge(champDateNaissance.value);
+    let htmlContenu = "";
 
-    // Deux tableaux en parallèle : le nom de chaque discipline et son âge minimum requis
-    const nomsDisciplines = ["Savate Boxe Française", "Savate Défense", "Savate Training", "Savate Forme"];
-    const agesMinimum = [7, 12, 14, 16];
+    for (let i = 0; i < noms.length; i++) {
 
-    // On repart d'un select vide avant de le remplir
-    selectDiscipline.innerHTML = "<option value=''>-- Sélectionner une discipline --</option>";
+        // Switch : une couleur d'en-tête différente selon la discipline
+        let classeDiscipline;
+        switch (disciplines[i]) {
+            case "Savate Boxe Française":
+                classeDiscipline = "disc-boxe";
+                break;
+            case "Savate Défense":
+                classeDiscipline = "disc-defense";
+                break;
+            case "Savate Training":
+                classeDiscipline = "disc-training";
+                break;
+            case "Savate Forme":
+                classeDiscipline = "disc-forme";
+                break;
+            default:
+                classeDiscipline = "disc-autre";
+        }
 
-    // On parcourt les disciplines et on ajoute uniquement celles accessibles à cet âge
+        // Ternaire : mention mineur / majeur
+        const statut = ages[i] < 18 ? "Mineur" : "Majeur";
+
+        htmlContenu += `
+            <article class="carte-demande">
+                <h3 class="${classeDiscipline}">${disciplines[i]}</h3>
+                <p class="identite">${prenoms[i]} ${noms[i]}</p>
+                <p class="details">${ages[i]} ans · ${statut}</p>
+            </article>
+        `;
+    }
+
+    liste.innerHTML = htmlContenu;
+}
+
+// Met à jour la liste déroulante selon l'âge saisi : seules les disciplines accessibles sont proposées
+function mettreAJourDisciplines() {
+    const champAge = document.querySelector("#age");
+    const champDiscipline = document.querySelector("#discipline");
+
+    // On mémorise le choix en cours pour le conserver s'il reste valide
+    const choixActuel = champDiscipline.value;
+
+    // Champ vide : on ne filtre pas, toutes les disciplines sont proposées
+    const filtrer = champAge.value !== "";
+    const age = Number(champAge.value);
+
+    let htmlOptions = "";
+    let nbDisponibles = 0;
+
     for (let i = 0; i < nomsDisciplines.length; i++) {
-        if (age >= agesMinimum[i]) {
-            selectDiscipline.innerHTML += `<option value="${nomsDisciplines[i]}">${nomsDisciplines[i]}</option>`;
+        if (!filtrer || age >= agesMinimum[i]) {
+            htmlOptions += `<option value="${nomsDisciplines[i]}">${nomsDisciplines[i]}</option>`;
+            nbDisponibles++;
         }
     }
+
+    // Ternaire : texte d'invite selon qu'il reste ou non des disciplines
+    const invite = nbDisponibles === 0
+        ? "-- Aucune discipline disponible à cet âge --"
+        : "-- Sélectionner une discipline --";
+
+    champDiscipline.innerHTML = `<option value="">${invite}</option>` + htmlOptions;
+
+    // Si l'ancien choix est toujours proposé, on le re-sélectionne (sinon retour à l'invite)
+    champDiscipline.value = choixActuel;
 }
 
-// Fonction d'affichage : reçoit des données et les écrit dans la page
-function afficherDonnees(nom, prenom, age, discipline) {
-    const carteNom = document.querySelector("#carte-nom");
-    const cartePrenom = document.querySelector("#carte-prenom");
-    const carteAge = document.querySelector("#carte-age");
-    const carteDiscipline = document.querySelector("#carte-discipline");
+// À chaque frappe dans le champ âge, la liste des disciplines est recalculée
+document.querySelector("#age").addEventListener("input", mettreAJourDisciplines);
 
-    carteNom.textContent = "Nom : " + nom;
-    cartePrenom.textContent = "Prénom : " + prenom;
-    carteAge.textContent = "Âge : " + age + " ans";
-    carteDiscipline.textContent = "Discipline : " + discipline;
-}
-
-// Appelée à la soumission du formulaire
+// Appelée à la soumission du formulaire : valide, ajoute aux tableaux, puis affiche
 function EnregistrerDemande(event) {
-    event.preventDefault(); // empêche le rechargement de la page
+    event.preventDefault();
 
     const champNom = document.querySelector("#nom");
     const champPrenom = document.querySelector("#prenom");
-    const champDateNaissance = document.querySelector("#dateNaissance");
+    const champAge = document.querySelector("#age");
     const champDiscipline = document.querySelector("#discipline");
+    const messageErreur = document.querySelector("#message-erreur");
 
     const nom = champNom.value;
     const prenom = champPrenom.value;
-    const age = calculerAge(champDateNaissance.value);
+    const age = Number(champAge.value);
     const discipline = champDiscipline.value;
 
-    afficherDonnees(nom, prenom, age, discipline);
+    // Recherche de l'âge minimum de la discipline choisie dans les tableaux parallèles
+    let ageRequis = 0;
+    for (let i = 0; i < nomsDisciplines.length; i++) {
+        if (nomsDisciplines[i] === discipline) {
+            ageRequis = agesMinimum[i];
+        }
+    }
 
-    // Réinitialiser le formulaire
+    // Validation : on garde le premier message d'erreur rencontré
+    let erreur = "";
+    if (!nom) {
+        erreur = "Veuillez renseigner le nom.";
+    } else if (!prenom) {
+        erreur = "Veuillez renseigner le prénom.";
+    } else if (!champAge.value) {
+        erreur = "Veuillez renseigner l'âge.";
+    } else if (age < agesMinimum[0]) {
+        erreur = "L'âge minimum pour une séance d'essai est de " + agesMinimum[0] + " ans.";
+    } else if (!discipline) {
+        erreur = "Veuillez choisir une discipline.";
+    } else if (age < ageRequis) {
+        erreur = discipline + " est accessible à partir de " + ageRequis + " ans.";
+    }
+
+    if (erreur !== "") {
+        messageErreur.textContent = erreur;
+        return;
+    }
+
+    // Tout est valide : on ajoute la demande dans chaque tableau
+    noms.push(nom);
+    prenoms.push(prenom);
+    ages.push(age);
+    disciplines.push(discipline);
+
+    // Réinitialisation du formulaire
+    messageErreur.textContent = "";
     champNom.value = "";
     champPrenom.value = "";
-    champDateNaissance.value = "";
+    champAge.value = "";
     champDiscipline.value = "";
+    mettreAJourDisciplines();
+
+    afficherDemandes();
 }
 
+// Affichage initial (liste vide)
+afficherDemandes();
+afficherEquipe();

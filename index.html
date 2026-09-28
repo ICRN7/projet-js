@@ -1,88 +1,101 @@
 <!DOCTYPE html>
 <html lang="fr">
 
-
 <head>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
     <meta charset="UTF-8">
-    <title>BFC Calais - Séance d'essai</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BFC Calais - Séance d'essai !</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <h1>BFC CALAIS - Club de Savate Boxe Française & Disciplines Associées</h1>
-    <p>Avant de prendre votre licence, vous bénéficiez de deux séances d'essai gratuites !</p>
-    <p>Disciplines proposées :</p>
+    <div class="entete">
+        <p class="sigle">BFC CALAIS</p>
+        <p class="sous-titre">Savate Boxe Française & Disciplines Associées</p>
+        <div class="accroche">
+            <span class="chiffre">2</span>
+            <span class="libelle">séances d'essai offertes avant votre licence</span>
+        </div>
+    </div>
 
-    <article class="bloc-discipline">
-        <h3>Savate Boxe Française</h3>
-        <p>Sport de percussion pieds-poings, technique et précision, pratiqué avec des chaussures de boxe.</p>
-        <p>A partir de 7 ans (ou année des 7 ans)</p>
+    <div class="contenu">
+        <h2 class="titre-section">Nos disciplines</h2>
 
-        <h4>Horaires :
-            ADOS : Lundi/Jeudi 18h-19h
-            ADULTES : Lundi/Jeudi 19h-20h30
-            ENFANTS : Mardi/Vendredi 18h-19h
-        </h4>
-    </article>
+        <div class="disciplines">
+            <article class="bloc-discipline">
+                <div class="entete-discipline">
+                    <h3>Savate Boxe Française</h3>
+                    <span class="age">Dès 7 ans</span>
+                </div>
+                <p>Sport de percussion pieds-poings, technique et précision, pratiqué avec des chaussures de boxe.</p>
+            </article>
 
-    <article class="bloc-discipline">
-        <h3>Savate Forme</h3>
-        <p>Version cardio et fitness de la Savate, sans combat, pour se dépenser sur des enchaînements rythmés et en
-            musique !</p>
-        <p>A partir de 16 ans</p>
+            <article class="bloc-discipline">
+                <div class="entete-discipline">
+                    <h3>Savate Forme</h3>
+                    <span class="age">Dès 16 ans</span>
+                </div>
+                <p>Version cardio et fitness de la Savate, sans combat, sur des enchaînements rythmés et en musique.</p>
+            </article>
 
-        <h4>Horaires :
-            Mercredi/Vendredi 19H15-20H15
-        </h4>
-    </article>
+            <article class="bloc-discipline">
+                <div class="entete-discipline">
+                    <h3>Savate Défense</h3>
+                    <span class="age">Dès 12 ans</span>
+                </div>
+                <p>Techniques issues de la Savate adaptées à la self-défense et aux situations concrètes.</p>
+            </article>
 
-    <article class="bloc-discipline">
-        <h3>Savate Défense</h3>
-        <p>Techniques issues de la Savate adaptées à la self-défense et aux situations concrètes.</p>
-        <p>A partir de 12 ans</p>
+            <article class="bloc-discipline">
+                <div class="entete-discipline">
+                    <h3>Savate Training</h3>
+                    <span class="age">Dès 14 ans</span>
+                </div>
+                <p>Entraînement physique inspiré de la Savate, renforcement et préparation athlétique.</p>
+            </article>
+        </div>
 
-        <h4>Horaires :
-            Mercredi 19H15-20H15
-        </h4>
-    </article>
+        <h2 class="titre-section">Notre équipe</h2>
 
-    <article class="bloc-discipline">
-        <h3>Savate Training</h3>
-        <p>Entraînement physique inspiré de la Savate, orienté renforcement et préparation athlétique.</p>
-        <p>A partir de 14 ans</p>
+        <div id="liste-equipe" class="equipe"></div>
 
-        <h4>Horaires :
-            Mercredi 18h-19h
-            Samedi 10h30-11h30
-        </h4>
-    </article>
+        <h2 class="titre-section">Demander une séance d'essai</h2>
 
-    <h2>Veuillez remplir le formulaire ci-dessous :</h2>
+        <form onsubmit="EnregistrerDemande(event)">
+            <div class="ligne-double">
+                <div>
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" placeholder="Nom">
+                </div>
+                <div>
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" placeholder="Prénom">
+                </div>
+            </div>
 
-    <p id="carte-nom">Nom </p>
-    <p id="carte-prenom">Prénom </p>
-    <p id="carte-age">Âge </p>
-    <p id="carte-discipline">Discipline souhaitée </p>
+            <label for="age">Âge</label>
+            <input type="number" id="age" placeholder="Ex : 14">
 
-    <form onsubmit="EnregistrerDemande(event)">
-        <label for="nom">Nom</label>
-        <input type="text" id="nom" placeholder="Nom">
+            <label for="discipline">Discipline</label>
+            <select id="discipline">
+                <option value="">-- Sélectionner une discipline --</option>
+                <option value="Savate Boxe Française">Savate Boxe Française</option>
+                <option value="Savate Défense">Savate Défense</option>
+                <option value="Savate Training">Savate Training</option>
+                <option value="Savate Forme">Savate Forme</option>
+            </select>
 
-        <label for="prenom">Prénom</label>
-        <input type="text" id="prenom" placeholder="Prénom">
+            <p id="message-erreur" class="message-erreur"></p>
 
-        <label for="dateNaissance">Date de naissance</label>
-        <input type="date" id="dateNaissance" oninput="filtrerDisciplines()">
+            <button type="submit">Enregistrer ma demande</button>
+        </form>
 
-        <label for="discipline">Discipline</label>
-        <select id="discipline">
-            <option value="">-- Sélectionner une discipline --</option>
-        </select>
+        <h2 class="titre-section">Demandes enregistrées <span id="compteur"></span></h2>
 
-        <button type="submit">Enregistrer</button>
-    </form>
+        <div id="liste-demandes"></div>
+    </div>
 
+    <script src="script.js"></script>
 </body>
 
 </html>

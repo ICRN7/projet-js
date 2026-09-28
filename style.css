@@ -1,0 +1,491 @@
+/* style.css - BFC Calais - Séance d'essai */
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --rouge: #c23d44;
+    --rouge-fonce: #8f2c32;
+    --jaune: #ffbd59;
+    --creme: #faf6f0;
+    --encre: #221a17;
+    --gris-texte: #5a5049;
+
+    --espace-1: 8px;
+    --espace-2: 16px;
+    --espace-3: 24px;
+    --espace-4: 40px;
+    --espace-5: 64px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background-color: var(--creme);
+    color: var(--encre);
+    margin: 0;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Entête - découpe diagonale plein cadre ===== */
+.entete {
+    position: relative;
+    background-color: var(--rouge);
+    color: var(--creme);
+    padding: var(--espace-5) var(--espace-3) 96px;
+    text-align: center;
+    clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+}
+
+.entete .sigle {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.4rem, 8vw, 4.5rem);
+    letter-spacing: 0.01em;
+    margin: 0;
+    line-height: 1;
+}
+
+.entete .sous-titre {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: clamp(0.95rem, 2vw, 1.15rem);
+    color: var(--jaune);
+    letter-spacing: 0.03em;
+    margin: 6px 0 var(--espace-3);
+}
+
+.entete .accroche {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    background: rgba(34, 26, 23, 0.18);
+    padding: 10px 22px;
+    margin-top: var(--espace-2);
+}
+
+.entete .accroche .chiffre {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--jaune);
+    line-height: 1;
+}
+
+.entete .accroche .libelle {
+    font-size: 0.95rem;
+    text-align: left;
+    max-width: 160px;
+    line-height: 1.25;
+}
+
+/* ===== Contenu ===== */
+.contenu {
+    max-width: 720px;
+    margin: -40px auto 0;
+    padding: 0 var(--espace-3) var(--espace-5);
+    position: relative;
+}
+
+.titre-section {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: var(--espace-4) 0 var(--espace-3);
+    display: flex;
+    align-items: center;
+    gap: var(--espace-2);
+}
+
+.titre-section::after {
+    content: "";
+    flex: 1;
+    height: 3px;
+    background: var(--encre);
+}
+
+/* Disciplines : grille à deux colonnes, sans carte ni ombre */
+.disciplines {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    margin-bottom: var(--espace-5);
+}
+
+.bloc-discipline {
+    padding: var(--espace-3) 0;
+    border-bottom: 1px solid rgba(34, 26, 23, 0.14);
+}
+
+.bloc-discipline:nth-child(odd) {
+    border-right: 1px solid rgba(34, 26, 23, 0.14);
+    padding-right: var(--espace-3);
+}
+
+.bloc-discipline:nth-child(even) {
+    padding-left: var(--espace-3);
+}
+
+.bloc-discipline .entete-discipline {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--espace-2);
+    margin-bottom: 6px;
+}
+
+.bloc-discipline h3 {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0;
+    color: var(--rouge-fonce);
+}
+
+.bloc-discipline .age {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--encre);
+    background: var(--jaune);
+    padding: 3px 10px;
+    white-space: nowrap;
+    transform: skewX(-8deg);
+    display: inline-block;
+}
+
+.bloc-discipline p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--gris-texte);
+}
+
+/* ===== Demandes enregistrées ===== */
+.titre-section #compteur {
+    font-family: 'Inter', Arial, sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: var(--gris-texte);
+}
+
+#liste-demandes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--espace-2);
+}
+
+#liste-demandes .vide {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--gris-texte);
+    font-size: 0.95rem;
+}
+
+.carte-demande {
+    border: 2px solid var(--encre);
+    background: var(--creme);
+}
+
+.carte-demande h3 {
+    margin: 0;
+    padding: 8px var(--espace-2);
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    color: var(--creme);
+}
+
+.carte-demande .identite {
+    margin: var(--espace-2) var(--espace-2) 2px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.carte-demande .details {
+    margin: 0 var(--espace-2) var(--espace-2);
+    font-size: 0.85rem;
+    color: var(--gris-texte);
+}
+
+/* Couleur d'en-tête selon la discipline (classe choisie par le switch en JS) */
+.carte-demande h3.disc-boxe {
+    background: var(--rouge);
+}
+
+.carte-demande h3.disc-defense {
+    background: var(--jaune);
+    color: var(--encre);
+}
+
+.carte-demande h3.disc-training {
+    background: var(--encre);
+}
+
+.carte-demande h3.disc-forme {
+    background: var(--rouge-fonce);
+}
+
+.carte-demande h3.disc-autre {
+    background: var(--gris-texte);
+}
+
+/* ===== Formulaire ===== */
+form {
+    border: 2px solid var(--encre);
+    border-top: 6px solid var(--rouge);
+    padding: var(--espace-4);
+    margin-bottom: var(--espace-5);
+}
+
+.ligne-double {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espace-3);
+}
+
+form label {
+    display: block;
+    margin-top: var(--espace-3);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--gris-texte);
+}
+
+form input,
+form select {
+    width: 100%;
+    padding: 10px 2px;
+    margin-top: 6px;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 2px solid rgba(34, 26, 23, 0.35);
+    background: transparent;
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 1rem;
+    color: var(--encre);
+    transition: border-color 0.15s ease;
+}
+
+form input::placeholder {
+    color: rgba(34, 26, 23, 0.35);
+}
+
+form input:focus,
+form select:focus {
+    outline: none;
+    border-bottom-color: var(--rouge);
+}
+
+.message-erreur {
+    min-height: 1.4em;
+    margin: var(--espace-3) 0 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--rouge-fonce);
+}
+
+form button {
+    margin-top: var(--espace-2);
+    width: 100%;
+    padding: 15px;
+    background-color: var(--rouge);
+    color: var(--creme);
+    border: none;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+form button:hover {
+    background-color: var(--rouge-fonce);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 560px) {
+
+    .disciplines,
+    #liste-demandes,
+    .ligne-double {
+        grid-template-columns: 1fr;
+    }
+
+    .bloc-discipline:nth-child(odd) {
+        border-right: none;
+        padding-right: 0;
+    }
+
+    .bloc-discipline:nth-child(even) {
+        padding-left: 0;
+    }
+
+    .entete .accroche {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .entete .accroche .libelle {
+        text-align: center;
+        max-width: none;
+    }
+}
+
+/* ===== Équipe : cartes des moniteurs ===== */
+.equipe {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--espace-3);
+    margin-bottom: var(--espace-5);
+}
+
+.carte-coach {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--espace-2);
+    padding: var(--espace-2);
+    background: #fff;
+    border: 2px solid var(--encre);
+    box-shadow: 5px 5px 0 var(--encre);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.carte-coach:hover {
+    transform: translate(-2px, -2px) rotate(-0.4deg);
+    box-shadow: 8px 8px 0 var(--rouge);
+}
+
+/* Le président occupe toute la largeur et passe en rouge */
+.carte-president {
+    grid-column: 1 / -1;
+    background: var(--rouge);
+    color: var(--creme);
+    box-shadow: 5px 5px 0 var(--jaune);
+}
+
+.carte-president:hover {
+    box-shadow: 8px 8px 0 var(--jaune);
+}
+
+/* Intervenant occasionnel : bordure en pointillés */
+.carte-occasionnelle {
+    border-style: dashed;
+    box-shadow: none;
+    background: transparent;
+}
+
+/* Badge d'initiales, incliné comme les étiquettes d'âge */
+.badge-coach {
+    flex: 0 0 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: 0.02em;
+    color: var(--creme);
+    transform: skewX(-8deg) rotate(-4deg);
+}
+
+.badge-coach.couleur-0 {
+    background: var(--rouge);
+}
+
+.badge-coach.couleur-1 {
+    background: var(--encre);
+}
+
+.badge-coach.couleur-2 {
+    background: var(--rouge-fonce);
+}
+
+.badge-coach.couleur-3 {
+    background: var(--jaune);
+    color: var(--encre);
+}
+
+.carte-president .badge-coach {
+    background: var(--jaune);
+    color: var(--encre);
+    flex-basis: 68px;
+    height: 68px;
+    font-size: 1.7rem;
+}
+
+.infos-coach h3 {
+    margin: 0;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 1.15rem;
+    line-height: 1.2;
+}
+
+.carte-president .infos-coach h3 {
+    font-size: 1.4rem;
+}
+
+.infos-coach .fonction {
+    margin: 2px 0 var(--espace-1);
+    font-size: 0.85rem;
+    color: var(--gris-texte);
+}
+
+.carte-president .fonction {
+    color: var(--jaune);
+    font-weight: 600;
+}
+
+.puces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.puce {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--encre);
+    background: var(--jaune);
+    padding: 3px 10px;
+    transform: skewX(-8deg);
+    display: inline-block;
+}
+
+/* Puces "Cours enfants / ados / adultes" : contour seul */
+.puce-cours {
+    background: transparent;
+    border: 1.5px solid var(--encre);
+    padding: 1px 9px;
+}
+
+.carte-president .puce-cours {
+    border-color: var(--creme);
+    color: var(--creme);
+}
+
+.infos-coach .occasionnel {
+    margin: var(--espace-1) 0 0;
+    font-size: 0.82rem;
+    font-style: italic;
+    color: var(--gris-texte);
+}
+
+@media (max-width: 560px) {
+    .equipe {
+        grid-template-columns: 1fr;
+    }
+}
