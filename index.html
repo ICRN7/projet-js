@@ -65,19 +65,19 @@
             <div class="ligne-double">
                 <div>
                     <label for="nom">Nom</label>
-                    <input type="text" id="nom" placeholder="Nom">
+                    <input type="text" id="nom" placeholder="Nom" oninput="controlerSaisie()">
                 </div>
                 <div>
                     <label for="prenom">Prénom</label>
-                    <input type="text" id="prenom" placeholder="Prénom">
+                    <input type="text" id="prenom" placeholder="Prénom" oninput="controlerSaisie()">
                 </div>
             </div>
 
             <label for="age">Âge</label>
-            <input type="number" id="age" placeholder="Ex : 14">
+            <input type="number" id="age" placeholder="Ex : 14" oninput="mettreAJourDisciplines()">
 
             <label for="discipline">Discipline</label>
-            <select id="discipline">
+            <select id="discipline" oninput="controlerSaisie()">
                 <option value="">-- Sélectionner une discipline --</option>
                 <option value="Savate Boxe Française">Savate Boxe Française</option>
                 <option value="Savate Défense">Savate Défense</option>
@@ -93,6 +93,14 @@
         <h2 class="titre-section">Demandes enregistrées <span id="compteur"></span></h2>
 
         <div id="liste-demandes"></div>
+    </div>
+
+    <!-- Message de confirmation affiché au milieu de l'écran -->
+    <div id="confirmation" class="confirmation" onclick="fermerConfirmation()">
+        <div class="boite-confirmation">
+            <div class="icone-confirmation">✓</div>
+            <p>Réservation de séance confirmée</p>
+        </div>
     </div>
 
     <script src="script.js"></script>

@@ -489,3 +489,84 @@ form button:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== Message de confirmation (centré sur l'écran) ===== */
+.confirmation {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--espace-3);
+    background: rgba(34, 26, 23, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.confirmation.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.boite-confirmation {
+    background: var(--creme);
+    border: 3px solid var(--encre);
+    border-top: 8px solid var(--rouge);
+    padding: var(--espace-4) var(--espace-4) var(--espace-3);
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 8px 8px 0 var(--jaune);
+    transform: scale(0.9);
+    transition: transform 0.25s ease;
+}
+
+.confirmation.visible .boite-confirmation {
+    transform: scale(1);
+}
+
+.icone-confirmation {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto var(--espace-2);
+    border-radius: 50%;
+    background: var(--rouge);
+    color: var(--creme);
+    font-size: 1.8rem;
+    line-height: 56px;
+    font-weight: 700;
+}
+
+.boite-confirmation p {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin: 0;
+    color: var(--encre);
+}
+
+
+/* ===== Bouton de suppression d'une demande ===== */
+.carte-demande .btn-supprimer {
+    display: block;
+    margin: 0 var(--espace-2) var(--espace-2);
+    padding: 6px var(--espace-2);
+    border: 2px solid var(--encre);
+    background: transparent;
+    color: var(--encre);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.carte-demande .btn-supprimer:hover {
+    background: var(--rouge);
+    border-color: var(--rouge);
+    color: var(--creme);
+}

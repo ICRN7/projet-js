@@ -20,14 +20,14 @@ const categoriesBoxe = ["Cours enfants / ados / adultes", "Cours enfants", "Cour
 const occasionnels = [false, false, false, false, false, true];
 
 // Affichage de l'équipe : une carte par moniteur
-function afficherEquipe() {
+const afficherEquipe = () => {
     const grille = document.querySelector("#liste-equipe");
     let htmlCartes = "";
 
     for (let i = 0; i < nomsCoachs.length; i++) {
-        // Initiales pour le badge : première lettre du prénom + première lettre du nom
-        const morceaux = nomsCoachs[i].split(" ");
-        const initiales = morceaux[0][0] + morceaux[1][0];
+        // Déstructuration : on extrait directement le prénom et le nom du moniteur
+        const [prenomCoach, nomCoach] = nomsCoachs[i].split(" ");
+        const initiales = prenomCoach[0] + nomCoach[0];
 
         // Boucle imbriquée : une "puce" par discipline
         let puces = "";
@@ -62,16 +62,20 @@ function afficherEquipe() {
     }
 
     grille.innerHTML = htmlCartes;
-}
+};
 
 // Demandes enregistrées : tableaux parallèles (même position = même demande)
-const noms = [];
-const prenoms = [];
-const ages = [];
-const disciplines = [];
+// "let" car on ne modifie jamais un tableau : on le remplace par une nouvelle copie (immutabilité)
+let noms = [];
+let prenoms = [];
+let ages = [];
+let disciplines = [];
+
+// Retourne une copie du tableau sans l'élément à la position donnée (le tableau d'origine n'est pas modifié)
+const retirerElement = (tableau, position) => [...tableau.slice(0, position), ...tableau.slice(position + 1)];
 
 // Fonction d'affichage : génère une carte par demande et l'injecte dans la page
-function afficherDemandes() {
+const afficherDemandes = () => {
     const liste = document.querySelector("#liste-demandes");
     const compteur = document.querySelector("#compteur");
 
@@ -109,20 +113,32 @@ function afficherDemandes() {
         // Ternaire : mention mineur / majeur
         const statut = ages[i] < 18 ? "Mineur" : "Majeur";
 
+        // onclick placé directement dans le HTML généré : il appelle supprimerDemande avec la position de la carte
         htmlContenu += `
             <article class="carte-demande">
                 <h3 class="${classeDiscipline}">${disciplines[i]}</h3>
                 <p class="identite">${prenoms[i]} ${noms[i]}</p>
                 <p class="details">${ages[i]} ans · ${statut}</p>
+                <button type="button" class="btn-supprimer" onclick="supprimerDemande(${i})">Supprimer</button>
             </article>
         `;
     }
 
     liste.innerHTML = htmlContenu;
-}
+};
+
+// Suppression directe d'une demande : on remplace chaque tableau par une copie sans l'élément
+const supprimerDemande = (position) => {
+    noms = retirerElement(noms, position);
+    prenoms = retirerElement(prenoms, position);
+    ages = retirerElement(ages, position);
+    disciplines = retirerElement(disciplines, position);
+
+    afficherDemandes();
+};
 
 // Met à jour la liste déroulante selon l'âge saisi : seules les disciplines accessibles sont proposées
-function mettreAJourDisciplines() {
+const mettreAJourDisciplines = () => {
     const champAge = document.querySelector("#age");
     const champDiscipline = document.querySelector("#discipline");
 
@@ -152,71 +168,151 @@ function mettreAJourDisciplines() {
 
     // Si l'ancien choix est toujours proposé, on le re-sélectionne (sinon retour à l'invite)
     champDiscipline.value = choixActuel;
-}
 
-// À chaque frappe dans le champ âge, la liste des disciplines est recalculée
-document.querySelector("#age").addEventListener("input", mettreAJourDisciplines);
+    // L'âge a changé : on relance le contrôle de saisie
+    controlerSaisie();
+};
 
-// Appelée à la soumission du formulaire : valide, ajoute aux tableaux, puis affiche
-function EnregistrerDemande(event) {
-    event.preventDefault();
+// ===== Contrôle de saisie =====
 
-    const champNom = document.querySelector("#nom");
-    const champPrenom = document.querySelector("#prenom");
-    const champAge = document.querySelector("#age");
-    const champDiscipline = document.querySelector("#discipline");
-    const messageErreur = document.querySelector("#message-erreur");
+// Messages associés aux champs obligatoires (même ordre que les paramètres de trouverChampVide)
+const messagesChamps = ["Veuillez renseigner le nom.", "Veuillez renseigner le prénom.", "Veuillez renseigner l'âge."];
 
-    const nom = champNom.value;
-    const prenom = champPrenom.value;
-    const age = Number(champAge.value);
-    const discipline = champDiscipline.value;
+// Paramètre Rest : accepte un nombre quelconque de valeurs et retourne la position de la première vide (-1 si aucune)
+const trouverChampVide = (...valeurs) => {
+    for (let i = 0; i < valeurs.length; i++) {
+        if (!valeurs[i]) {
+            return i;
+        }
+    }
+    return -1;
+};
 
-    // Recherche de l'âge minimum de la discipline choisie dans les tableaux parallèles
+// Retourne true si le texte contient au moins un chiffre
+const contientChiffre = (texte) => {
+    for (let i = 0; i < texte.length; i++) {
+        if ("0123456789".includes(texte[i])) {
+            return true;
+        }
+    }
+    return false;
+};
+
+// Retourne l'âge minimum de la discipline donnée (0 si aucune discipline choisie)
+const trouverAgeRequis = (discipline) => {
     let ageRequis = 0;
     for (let i = 0; i < nomsDisciplines.length; i++) {
         if (nomsDisciplines[i] === discipline) {
             ageRequis = agesMinimum[i];
         }
     }
+    return ageRequis;
+};
 
-    // Validation : on garde le premier message d'erreur rencontré
-    let erreur = "";
-    if (!nom) {
-        erreur = "Veuillez renseigner le nom.";
-    } else if (!prenom) {
-        erreur = "Veuillez renseigner le prénom.";
-    } else if (!champAge.value) {
-        erreur = "Veuillez renseigner l'âge.";
-    } else if (age < agesMinimum[0]) {
-        erreur = "L'âge minimum pour une séance d'essai est de " + agesMinimum[0] + " ans.";
-    } else if (!discipline) {
-        erreur = "Veuillez choisir une discipline.";
-    } else if (age < ageRequis) {
-        erreur = discipline + " est accessible à partir de " + ageRequis + " ans.";
+// Lit les champs du formulaire et retourne leurs valeurs dans un tableau
+const lireFormulaire = () => [
+    document.querySelector("#nom").value,
+    document.querySelector("#prenom").value,
+    document.querySelector("#age").value,
+    document.querySelector("#discipline").value
+];
+
+// Retourne le premier message d'erreur ("" si tout est correct)
+// soumission = true : on exige que tous les champs soient remplis ; false : on ne contrôle que ce qui est déjà saisi
+const verifierSaisie = (soumission) => {
+    // Déstructuration : on extrait directement chaque valeur du tableau
+    const [nom, prenom, ageTexte, discipline] = lireFormulaire();
+    const age = Number(ageTexte);
+    // Déstructuration : on ne garde que le premier âge minimum (celui de la Boxe Française)
+    const [ageMinimumEssai] = agesMinimum;
+
+    if (soumission) {
+        const positionVide = trouverChampVide(nom, prenom, ageTexte);
+        if (positionVide !== -1) {
+            return messagesChamps[positionVide];
+        }
     }
 
+    if (contientChiffre(nom)) {
+        return "Le nom ne doit pas contenir de chiffres.";
+    }
+    if (contientChiffre(prenom)) {
+        return "Le prénom ne doit pas contenir de chiffres.";
+    }
+    if (ageTexte !== "" && age < ageMinimumEssai) {
+        return "L'âge minimum pour une séance d'essai est de " + ageMinimumEssai + " ans.";
+    }
+    if (soumission && !discipline) {
+        return "Veuillez choisir une discipline.";
+    }
+
+    const ageRequis = trouverAgeRequis(discipline);
+    if (ageTexte !== "" && age < ageRequis) {
+        return discipline + " est accessible à partir de " + ageRequis + " ans.";
+    }
+
+    return "";
+};
+
+// Appelée à chaque saisie (oninput) : affiche l'erreur en temps réel
+const controlerSaisie = () => {
+    document.querySelector("#message-erreur").textContent = verifierSaisie(false);
+};
+
+// ===== Message de confirmation =====
+
+// Délai avant fermeture automatique du message (en ms)
+let minuteurConfirmation;
+
+// Affiche le message de confirmation au milieu de l'écran, puis le masque tout seul
+const afficherConfirmation = () => {
+    const confirmation = document.querySelector("#confirmation");
+    confirmation.classList.add("visible");
+
+    clearTimeout(minuteurConfirmation);
+    minuteurConfirmation = setTimeout(fermerConfirmation, 3000);
+};
+
+// Masque le message (appelée aussi au clic sur le message)
+const fermerConfirmation = () => {
+    document.querySelector("#confirmation").classList.remove("visible");
+};
+
+// ===== Enregistrement =====
+
+// Appelée à la soumission du formulaire (onsubmit) : valide, ajoute aux tableaux, puis affiche
+const EnregistrerDemande = (event) => {
+    event.preventDefault();
+
+    const messageErreur = document.querySelector("#message-erreur");
+
+    // Validation complète : on affiche la première erreur rencontrée
+    const erreur = verifierSaisie(true);
+    messageErreur.textContent = erreur;
+
     if (erreur !== "") {
-        messageErreur.textContent = erreur;
         return;
     }
 
-    // Tout est valide : on ajoute la demande dans chaque tableau
-    noms.push(nom);
-    prenoms.push(prenom);
-    ages.push(age);
-    disciplines.push(discipline);
+    // Tout est valide : on récupère les valeurs par déstructuration
+    const [nom, prenom, ageTexte, discipline] = lireFormulaire();
+
+    // Opérateur Spread : chaque tableau est recréé avec le nouvel élément (pas de push, donc pas de mutation)
+    noms = [...noms, nom];
+    prenoms = [...prenoms, prenom];
+    ages = [...ages, Number(ageTexte)];
+    disciplines = [...disciplines, discipline];
 
     // Réinitialisation du formulaire
-    messageErreur.textContent = "";
-    champNom.value = "";
-    champPrenom.value = "";
-    champAge.value = "";
-    champDiscipline.value = "";
+    document.querySelector("#nom").value = "";
+    document.querySelector("#prenom").value = "";
+    document.querySelector("#age").value = "";
+    document.querySelector("#discipline").value = "";
     mettreAJourDisciplines();
 
     afficherDemandes();
-}
+    afficherConfirmation();
+};
 
 // Affichage initial (liste vide)
 afficherDemandes();
