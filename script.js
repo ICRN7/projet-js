@@ -74,6 +74,34 @@ let disciplines = [];
 // Retourne une copie du tableau sans l'élément à la position donnée (le tableau d'origine n'est pas modifié)
 const retirerElement = (tableau, position) => [...tableau.slice(0, position), ...tableau.slice(position + 1)];
 
+// Clé unique : on range les 4 tableaux parallèles dans un seul objet
+const CLE_DEMANDES = "demandesBFC";
+
+// Sérialisation : objet -> chaîne JSON -> localStorage
+const sauvegarderDemandes = () => {
+    const donnees = { noms, prenoms, ages, disciplines };
+    localStorage.setItem(CLE_DEMANDES, JSON.stringify(donnees));
+};
+
+// Désérialisation : localStorage -> chaîne JSON -> objet -> tableaux
+const chargerDemandes = () => {
+    const texte = localStorage.getItem(CLE_DEMANDES);
+
+    // getItem renvoie null si la clé n'existe pas (null = falsy)
+    if (!texte) {
+        return;
+    }
+
+    // JSON.parse lève une SyntaxError si le texte est corrompu : try...catch obligatoire
+    try {
+        const donnees = JSON.parse(texte);
+        ({ noms, prenoms, ages, disciplines } = donnees);
+    } catch (erreur) {
+        console.error("Données illisibles, remise à zéro :", erreur.message);
+        localStorage.removeItem(CLE_DEMANDES);
+    }
+};
+
 // Fonction d'affichage : génère une carte par demande et l'injecte dans la page
 const afficherDemandes = () => {
     const liste = document.querySelector("#liste-demandes");
@@ -133,6 +161,7 @@ const supprimerDemande = (position) => {
     prenoms = retirerElement(prenoms, position);
     ages = retirerElement(ages, position);
     disciplines = retirerElement(disciplines, position);
+    sauvegarderDemandes();
 
     afficherDemandes();
 };
@@ -257,6 +286,38 @@ const verifierSaisie = (soumission) => {
 // Appelée à chaque saisie (oninput) : affiche l'erreur en temps réel
 const controlerSaisie = () => {
     document.querySelector("#message-erreur").textContent = verifierSaisie(false);
+    sauvegarderBrouillon();
+};
+
+const CLE_BROUILLON = "brouillonFormulaire";
+
+// Appelée à chaque saisie : on mémorise l'état du formulaire pour cet onglet
+const sauvegarderBrouillon = () => {
+    sessionStorage.setItem(CLE_BROUILLON, JSON.stringify(lireFormulaire()));
+};
+
+// Au chargement : on remet les champs comme l'utilisateur les avait laissés
+const restaurerBrouillon = () => {
+    const texte = sessionStorage.getItem(CLE_BROUILLON);
+    if (!texte) {
+        return;
+    }
+
+    try {
+        const [nom, prenom, age, discipline] = JSON.parse(texte);
+
+        document.querySelector("#nom").value = nom;
+        document.querySelector("#prenom").value = prenom;
+        document.querySelector("#age").value = age;
+
+        // On reconstruit d'abord la liste des disciplines selon l'âge...
+        mettreAJourDisciplines();
+        // ...puis seulement on re-sélectionne la discipline
+        document.querySelector("#discipline").value = discipline;
+        controlerSaisie();
+    } catch (erreur) {
+        sessionStorage.removeItem(CLE_BROUILLON);
+    }
 };
 
 // ===== Message de confirmation =====
@@ -302,6 +363,7 @@ const EnregistrerDemande = (event) => {
     prenoms = [...prenoms, prenom];
     ages = [...ages, Number(ageTexte)];
     disciplines = [...disciplines, discipline];
+    sauvegarderDemandes();
 
     // Réinitialisation du formulaire
     document.querySelector("#nom").value = "";
@@ -310,10 +372,14 @@ const EnregistrerDemande = (event) => {
     document.querySelector("#discipline").value = "";
     mettreAJourDisciplines();
 
+    sessionStorage.removeItem(CLE_BROUILLON);
+
     afficherDemandes();
     afficherConfirmation();
 };
 
-// Affichage initial (liste vide)
+// Affichage initial
+chargerDemandes();
 afficherDemandes();
 afficherEquipe();
+restaurerBrouillon();
