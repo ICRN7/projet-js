@@ -70,6 +70,8 @@ let noms = [];
 let prenoms = [];
 let ages = [];
 let disciplines = [];
+// Horodatage de chaque demande : timestamp en millisecondes (Date.now()), même position que les autres tableaux
+let horodatages = [];
 
 // Retourne une copie du tableau sans l'élément à la position donnée (le tableau d'origine n'est pas modifié)
 const retirerElement = (tableau, position) => [...tableau.slice(0, position), ...tableau.slice(position + 1)];
@@ -79,7 +81,7 @@ const CLE_DEMANDES = "demandesBFC";
 
 // Sérialisation : objet -> chaîne JSON -> localStorage
 const sauvegarderDemandes = () => {
-    const donnees = { noms, prenoms, ages, disciplines };
+    const donnees = { noms, prenoms, ages, disciplines, horodatages };
     localStorage.setItem(CLE_DEMANDES, JSON.stringify(donnees));
 };
 
@@ -95,17 +97,121 @@ const chargerDemandes = () => {
     // JSON.parse lève une SyntaxError si le texte est corrompu : try...catch obligatoire
     try {
         const donnees = JSON.parse(texte);
-        ({ noms, prenoms, ages, disciplines } = donnees);
+        ({ noms, prenoms, ages, disciplines, horodatages } = donnees);
+
+        // Anciennes sauvegardes (sans horodatage) : on date les demandes existantes d'aujourd'hui, puis on resauvegarde
+        if (!horodatages) {
+            horodatages = noms.map(() => Date.now());
+            sauvegarderDemandes();
+        }
     } catch (erreur) {
         console.error("Données illisibles, remise à zéro :", erreur.message);
         localStorage.removeItem(CLE_DEMANDES);
     }
 };
 
+// ===== Objets du noyau : Math et Date =====
+
+// Une journée en millisecondes (1000 ms x 60 s x 60 min x 24 h)
+const MS_PAR_JOUR = 1000 * 60 * 60 * 24;
+
+// Math.round : arrondi à 2 décimales (on décale la virgule, on arrondit, on la remet)
+const arrondir2Decimales = (nombre) => Math.round(nombre * 100) / 100;
+
+// new Date() + toLocaleDateString : date du jour affichée dans l'entête
+const afficherDateDuJour = () => {
+    const maintenant = new Date();
+    const dateFormatee = maintenant.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+    document.querySelector("#date-du-jour").textContent = dateFormatee;
+};
+
+// Timestamp -> objet Date -> texte au format français
+const formaterDate = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+};
+
+// Écart entre maintenant et la demande : soustraction de timestamps (ms), puis conversion en jours entiers
+const joursEcoules = (timestamp) => {
+    const maintenant = new Date();
+    const dateDemande = new Date(timestamp);
+    const ecartMs = maintenant.getTime() - dateDemande.getTime();
+    return Math.floor(ecartMs / MS_PAR_JOUR);
+};
+
+// Texte d'ancienneté d'une demande
+const libelleAnciennete = (timestamp) => {
+    const jours = joursEcoules(timestamp);
+    if (jours === 0) {
+        return "Reçue aujourd'hui";
+    }
+    return "Reçue il y a " + jours + " jour" + (jours > 1 ? "s" : "");
+};
+
+// Math.min / Math.max avec le Spread operator : extrêmes des âges ; moyenne arrondie avec Math.round
+const afficherStatistiques = () => {
+    const zone = document.querySelector("#statistiques");
+
+    // Aucune demande : Math.min() / Math.max() d'un tableau vide donneraient Infinity, on n'affiche rien
+    if (ages.length === 0) {
+        zone.innerHTML = "";
+        return;
+    }
+
+    let somme = 0;
+    for (let i = 0; i < ages.length; i++) {
+        somme += ages[i];
+    }
+
+    const moyenne = arrondir2Decimales(somme / ages.length);
+    const plusJeune = Math.min(...ages);
+    const plusAge = Math.max(...ages);
+
+    zone.innerHTML = `
+        <div class="stat">
+            <span class="stat-valeur">${plusJeune} ans</span>
+            <span class="stat-libelle">Plus jeune</span>
+        </div>
+        <div class="stat">
+            <span class="stat-valeur">${plusAge} ans</span>
+            <span class="stat-libelle">Plus âgé</span>
+        </div>
+        <div class="stat">
+            <span class="stat-valeur">${moyenne.toLocaleString("fr-FR")} ans</span>
+            <span class="stat-libelle">Âge moyen</span>
+        </div>
+    `;
+};
+
+// Math.random + Math.floor : sélectionne une discipline au hasard parmi celles proposées dans la liste
+const choisirDisciplineAuHasard = () => {
+    const champDiscipline = document.querySelector("#discipline");
+
+    // La position 0 est l'invite ("-- Sélectionner... --") : il reste (nombre d'options - 1) vraies disciplines
+    const nbDisciplines = champDiscipline.options.length - 1;
+    if (nbDisciplines < 1) {
+        return;
+    }
+
+    // Entier aléatoire entre 1 et nbDisciplines (même schéma que le cours : floor(random * n) + 1)
+    const position = Math.floor(Math.random() * nbDisciplines) + 1;
+    champDiscipline.selectedIndex = position;
+
+    // Changement fait par le code (pas par l'utilisateur) : oninput ne se déclenche pas, on relance le contrôle
+    controlerSaisie();
+};
+
 // Fonction d'affichage : génère une carte par demande et l'injecte dans la page
 const afficherDemandes = () => {
     const liste = document.querySelector("#liste-demandes");
     const compteur = document.querySelector("#compteur");
+
+    afficherStatistiques();
 
     // Ternaire : accord du mot "demande" selon le nombre
     compteur.textContent = noms.length + " demande" + (noms.length > 1 ? "s" : "");
@@ -147,6 +253,7 @@ const afficherDemandes = () => {
                 <h3 class="${classeDiscipline}">${disciplines[i]}</h3>
                 <p class="identite">${prenoms[i]} ${noms[i]}</p>
                 <p class="details">${ages[i]} ans · ${statut}</p>
+                <p class="date-demande">${formaterDate(horodatages[i])}<br>${libelleAnciennete(horodatages[i])}</p>
                 <button type="button" class="btn-supprimer" onclick="supprimerDemande(${i})">Supprimer</button>
             </article>
         `;
@@ -161,6 +268,7 @@ const supprimerDemande = (position) => {
     prenoms = retirerElement(prenoms, position);
     ages = retirerElement(ages, position);
     disciplines = retirerElement(disciplines, position);
+    horodatages = retirerElement(horodatages, position);
     sauvegarderDemandes();
 
     afficherDemandes();
@@ -363,6 +471,8 @@ const EnregistrerDemande = (event) => {
     prenoms = [...prenoms, prenom];
     ages = [...ages, Number(ageTexte)];
     disciplines = [...disciplines, discipline];
+    // Date.now() : timestamp (ms depuis le 1er janvier 1970 UTC) de l'instant de l'enregistrement
+    horodatages = [...horodatages, Date.now()];
     sauvegarderDemandes();
 
     // Réinitialisation du formulaire
@@ -379,6 +489,7 @@ const EnregistrerDemande = (event) => {
 };
 
 // Affichage initial
+afficherDateDuJour();
 chargerDemandes();
 afficherDemandes();
 afficherEquipe();

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BFC Calais - Séance d'essai !</title>
+    <title>BFC Calais - Séance d'essai </title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -14,8 +14,9 @@
         <p class="sous-titre">Savate Boxe Française & Disciplines Associées</p>
         <div class="accroche">
             <span class="chiffre">2</span>
-            <span class="libelle">séances d'essai offertes avant votre licence</span>
+            <span class="libelle">Séances d'essai offertes avant votre licence !</span>
         </div>
+        <p id="date-du-jour" class="date-du-jour"></p>
     </div>
 
     <div class="contenu">
@@ -85,6 +86,8 @@
                 <option value="Savate Forme">Savate Forme</option>
             </select>
 
+            <button type="button" class="btn-hasard" onclick="choisirDisciplineAuHasard()">Choisir une discipline au
+                hasard</button>
             <p id="message-erreur" class="message-erreur"></p>
 
             <button type="submit">Enregistrer ma demande</button>
@@ -92,14 +95,17 @@
 
         <h2 class="titre-section">Demandes enregistrées <span id="compteur"></span></h2>
 
+        <div id="statistiques" class="statistiques"></div>
         <div id="liste-demandes"></div>
+
     </div>
 
     <!-- Message de confirmation affiché au milieu de l'écran -->
     <div id="confirmation" class="confirmation" onclick="fermerConfirmation()">
         <div class="boite-confirmation">
             <div class="icone-confirmation">✓</div>
-            <p>Réservation de séance confirmée</p>
+            <h4>Réservation de séance confirmée</h4>
+            <p>Hâte de vous rencontrer !</p>
         </div>
     </div>
 
