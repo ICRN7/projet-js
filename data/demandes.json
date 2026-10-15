@@ -1,0 +1,23 @@
+[
+    {
+        "nom": "caron",
+        "prenom": "ilona",
+        "age": 23,
+        "discipline": "Savate Training",
+        "horodatage": "2026-10-15T10:00:00"
+    },
+    {
+        "nom": "vaduret",
+        "prenom": "jess",
+        "age": 14,
+        "discipline": "Savate Boxe Française",
+        "horodatage": "2026-10-15T10:15:00"
+    },
+    {
+        "nom": "duquenoy",
+        "prenom": "lena",
+        "age": 7,
+        "discipline": "Savate Boxe Française",
+        "horodatage": "2026-10-15T10:30:00"
+    }
+]

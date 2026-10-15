@@ -1,0 +1,90 @@
+{
+    "club": {
+        "nom": "BFC Calais",
+        "sousTitre": "Savate Boxe Française & Disciplines Associées",
+        "seancesEssaiOffertes": 2
+    },
+    "disciplines": [
+        {
+            "nom": "Savate Boxe Française",
+            "ageMin": 7,
+            "description": "Sport de percussion pieds-poings, technique et précision, pratiqué avec des chaussures de boxe."
+        },
+        {
+            "nom": "Savate Défense",
+            "ageMin": 12,
+            "description": "Techniques issues de la Savate adaptées à la self-défense et aux situations concrètes."
+        },
+        {
+            "nom": "Savate Training",
+            "ageMin": 14,
+            "description": "Entraînement physique inspiré de la Savate, renforcement et préparation athlétique."
+        },
+        {
+            "nom": "Savate Forme",
+            "ageMin": 16,
+            "description": "Version cardio et fitness de la Savate, sans combat, sur des enchaînements rythmés et en musique."
+        }
+    ],
+    "equipe": [
+        {
+            "nom": "Philippe SUISSE",
+            "fonction": "Président du club",
+            "cours": [
+                "Savate Boxe Française",
+                "Savate Forme",
+                "Savate Défense",
+                "Savate Training"
+            ],
+            "categorieBoxe": "Cours enfants / ados / adultes",
+            "occasionnel": false
+        },
+        {
+            "nom": "Anne-Laure SUISSE",
+            "fonction": "Monitrice",
+            "cours": [
+                "Savate Boxe Française",
+                "Savate Forme"
+            ],
+            "categorieBoxe": "Cours enfants",
+            "occasionnel": false
+        },
+        {
+            "nom": "Maëva CARON",
+            "fonction": "Monitrice",
+            "cours": [
+                "Savate Boxe Française"
+            ],
+            "categorieBoxe": "Cours enfants",
+            "occasionnel": false
+        },
+        {
+            "nom": "Damien DIEFFENBACH",
+            "fonction": "Moniteur",
+            "cours": [
+                "Savate Boxe Française",
+                "Savate Training"
+            ],
+            "categorieBoxe": "Cours ados / adultes",
+            "occasionnel": false
+        },
+        {
+            "nom": "Julien WILLO",
+            "fonction": "Moniteur",
+            "cours": [
+                "Savate Boxe Française"
+            ],
+            "categorieBoxe": "Cours ados / adultes",
+            "occasionnel": false
+        },
+        {
+            "nom": "Nicolas CHIUMMIENTO",
+            "fonction": "Moniteur",
+            "cours": [
+                "Savate Boxe Française"
+            ],
+            "categorieBoxe": "Cours ados / adultes",
+            "occasionnel": true
+        }
+    ]
+}

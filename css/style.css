@@ -570,3 +570,69 @@ form button:hover {
     border-color: var(--rouge);
     color: var(--creme);
 }
+
+/* ===== Statistiques des demandes ===== */
+#statistiques {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 2px solid var(--encre);
+    margin-bottom: var(--espace-3);
+}
+
+#statistiques:empty {
+    display: none;
+}
+
+#statistiques .stat {
+    padding: var(--espace-2);
+    border-right: 1px solid rgba(34, 26, 23, 0.2);
+}
+
+#statistiques .stat:last-child {
+    border-right: none;
+}
+
+#statistiques .stat-valeur {
+    display: block;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    color: var(--rouge);
+}
+
+#statistiques .stat-libelle {
+    display: block;
+    margin-top: 4px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--gris-texte);
+}
+
+/* ===== Cartes : date et ancienneté alignées sous le nom ===== */
+.carte-demande .details {
+    margin-bottom: 2px;
+}
+
+.carte-demande .date-demande {
+    margin: 0 var(--espace-2) var(--espace-2);
+    font-size: 0.8rem;
+    color: var(--gris-texte);
+}
+
+@media (max-width: 560px) {
+    #statistiques .stat {
+        padding: var(--espace-1) 10px;
+    }
+
+    #statistiques .stat-valeur {
+        font-size: 1.3rem;
+    }
+}
+
+.carte-demande .date-demande .delai {
+    font-weight: 600;
+    color: var(--rouge-fonce);
+}
